@@ -1,58 +1,49 @@
+def cycle_execution(pixel_index, reg_X, current_CRT_row, CRT_image):
+    if pixel_index == reg_X or pixel_index == reg_X - 1 or pixel_index == reg_X + 1:
+        current_CRT_row += "#"
+    else:
+        current_CRT_row += " "
+
+    pixel_index += 1
+
+    if pixel_index == 40:
+        CRT_image.append(current_CRT_row)
+        current_CRT_row = ""
+        pixel_index = 0
+
+    return pixel_index, current_CRT_row
+
+def check_signal_strength(cycle_count, reg_X):
+    if (cycle_count - 20) % 40 == 0:
+        return cycle_count * reg_X
+
+    return 0
+
 with open("input.txt") as f:
-    ans = 0
-    x = 1
-    cycle = 1
-    cond = []
-    check = [20,60,100,140,180,220]
-    ans2 = []
-    output_row = ""
-    pixel = 0
-    for i in f:
-        i = i .strip("\n")
-        if i == "noop":
-            if pixel == x or pixel == x-1 or pixel == x+1:
-                output_row += "#"
-            else:
-                output_row += " "
-            pixel += 1
-            if pixel == 40:
-                ans2.append(output_row)
-                output_row = ""
-                pixel = 0
-            cycle += 1
-            if cycle in check:
-                ans += x*cycle
-            
-        else:
-            i = i.split(" ")
-            
-            if pixel == x or pixel == x-1 or pixel == x+1:
-                output_row += "#"
-            else:
-                output_row += " "
-            pixel += 1
-            if pixel == 40:
-                ans2.append(output_row)
-                output_row = ""
-                pixel = 0
-            cycle += 1
-            if cycle in check:
-                ans += x*cycle
+    signal_sum = 0
+    reg_X = 1
+    cycle_count = 0
+    CRT_image = []
 
-            if pixel == x or pixel == x-1 or pixel == x+1:
-                output_row += "#"
-            else:
-                output_row += " "
-            pixel += 1
-            if pixel == 40:
-                ans2.append(output_row)
-                output_row = ""
-                pixel = 0
-            cycle += 1
-            x += int(i[1])
-            if cycle in check:
-                ans += x*cycle
-    print(ans)
+    current_CRT_row = ""
+    pixel_index = 0
 
-    for i in ans2:
-        print(i)
+    for instruction in f:
+        instruction = instruction.strip("\n")
+        pixel_index, current_CRT_row = cycle_execution(pixel_index, reg_X, current_CRT_row, CRT_image)
+        cycle_count += 1
+        signal_sum += check_signal_strength(cycle_count, reg_X)
+
+        if instruction != "noop":
+            cmd, value = instruction.split(" ")
+            pixel_index, current_CRT_row = cycle_execution(pixel_index, reg_X, current_CRT_row, CRT_image)
+            cycle_count += 1
+            reg_X += int(value)
+            signal_sum += check_signal_strength(cycle_count, reg_X)
+
+    # Part 1 Answer
+    print(signal_sum)
+
+    # Part 2 Answer
+    for CRT_row in CRT_image:
+        print(CRT_row)
