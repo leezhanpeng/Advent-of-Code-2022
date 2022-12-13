@@ -8,7 +8,7 @@ public class day11 {
 
         HashMap<Integer, Monkey> partOneMonkeys = new HashMap<>();
         HashMap<Integer, Monkey> partTwoMonkeys = new HashMap<>();
-        int divisor_CM = 1;
+        int divisorCM = 1;
         try {
             BufferedReader reader = new BufferedReader(new FileReader("input.txt"));
             Monkey partOneMonkey = new Monkey();
@@ -45,15 +45,15 @@ public class day11 {
                     partOneMonkey.operant = inputValues[4];
                     partTwoMonkey.operant = inputValues[4];
                 } else if (inputType.equals("Test")) {
-                    divisor_CM *= Integer.parseInt(inputs[1].split(" ")[2]);
+                    divisorCM *= Integer.parseInt(inputs[1].split(" ")[2]);
                     partOneMonkey.divisor = Integer.parseInt(inputs[1].split(" ")[2]);
                     partTwoMonkey.divisor = Integer.parseInt(inputs[1].split(" ")[2]);
                 } else if (inputType.equals("If true")) {
-                    partOneMonkey.true_pass = Integer.parseInt(inputs[1].split(" ")[3]);
-                    partTwoMonkey.true_pass = Integer.parseInt(inputs[1].split(" ")[3]);
+                    partOneMonkey.truePass = Integer.parseInt(inputs[1].split(" ")[3]);
+                    partTwoMonkey.truePass = Integer.parseInt(inputs[1].split(" ")[3]);
                 } else if (inputType.equals("If false")) {
-                    partOneMonkey.false_pass = Integer.parseInt(inputs[1].split(" ")[3]);
-                    partTwoMonkey.false_pass = Integer.parseInt(inputs[1].split(" ")[3]);
+                    partOneMonkey.falsePass = Integer.parseInt(inputs[1].split(" ")[3]);
+                    partTwoMonkey.falsePass = Integer.parseInt(inputs[1].split(" ")[3]);
                 }
             }
             reader.close();
@@ -62,13 +62,13 @@ public class day11 {
         }
 
         // Part 1 Answer
-        System.out.println(monkeyBusiness(20, partOneMonkeys, true, divisor_CM));
+        System.out.println(monkeyBusiness(20, partOneMonkeys, true, divisorCM));
 
         // Part 2 Answer
-        System.out.println(monkeyBusiness(10000, partTwoMonkeys, false, divisor_CM));
+        System.out.println(monkeyBusiness(10000, partTwoMonkeys, false, divisorCM));
     }
 
-    public static long monkeyBusiness(int rounds, HashMap<Integer, Monkey> monkeys, boolean isPartOne, int divisor_CM) {
+    public static long monkeyBusiness(int rounds, HashMap<Integer, Monkey> monkeys, boolean isPartOne, int divisorCM) {
         for (int round = 0; round < rounds; round++) {
             for (int monkeyID = 0; monkeyID < monkeys.size(); monkeyID++) {
                 Monkey monkey = monkeys.get(monkeyID);
@@ -89,13 +89,13 @@ public class day11 {
                     if (isPartOne) {
                         worryValue /= 3;
                     } else {
-                        worryValue %= divisor_CM;
+                        worryValue %= divisorCM;
                     }
 
                     if (worryValue % monkey.divisor == 0) {
-                        monkeys.get(monkey.true_pass).items.add(worryValue);
+                        monkeys.get(monkey.truePass).items.add(worryValue);
                     } else {
-                        monkeys.get(monkey.false_pass).items.add(worryValue);
+                        monkeys.get(monkey.falsePass).items.add(worryValue);
                     }
                 }
 
@@ -119,7 +119,7 @@ public class day11 {
 }
 
 class Monkey {
-    int id, divisor, true_pass, false_pass;
+    int id, divisor, truePass, falsePass;
     String operant, operator;
     ArrayList<Long> items = new ArrayList<>();
 
