@@ -105,7 +105,6 @@ with open("input.txt") as f:
             part_two_monkey.false_pass = int(value[-1])            
 
 # Part 1 Answer
-print(monkey_business(20, part_one_monkeys, divisor_CM, True)
-)
+print(monkey_business(20, part_one_monkeys, divisor_CM, True))
 # Part 2 Answer
 print(monkey_business(10000, part_two_monkeys, divisor_CM, False))
