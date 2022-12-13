@@ -1,86 +1,111 @@
 import math
 
+class Monkey:
+    def __init__(self):
+        self.id = 0
+        self.items = []
+        self.operator = ""
+        self.operant = 0
+        self.divisor = 0
+        self.true_pass = 0
+        self.false_pass = 0
+        self.items_inspected = 0
+
+def monkey_business(rounds, monkeys, divisor_CM, is_part_one):
+    for round in range(rounds):
+        for monkey_id in range(len(monkeys)):
+            monkey = monkeys[monkey_id]
+            for item in monkey.items:
+                monkey.items_inspected += 1
+
+                if monkey.operant == "old":
+                    worry_val = item
+                else:
+                    worry_val = int(monkey.operant)
+                
+                if monkey.operator == "+":
+                    worry_val += item
+                else:
+                    worry_val *= item
+                
+                if is_part_one:
+                    worry_val /= 3
+                    worry_val = math.floor(worry_val)
+                else:
+                    worry_val %= divisor_CM
+
+                if worry_val % monkey.divisor == 0:
+                    monkeys[monkey.true_pass].items.append(worry_val)
+                else:
+                    monkeys[monkey.false_pass].items.append(worry_val)
+                
+            monkey.items = []
+
+    business_count = []
+    for monkey_id in monkeys:
+        business_count.append(monkeys[monkey_id].items_inspected)
+    business_count.sort()
+
+    return business_count[-1] * business_count[-2]
+
+
+divisor_CM = 1
+
+part_one_monkeys = {}
+part_two_monkeys = {}
 with open("input.txt") as f:
-    monkeyitems = {}
-    monkeyoper = {}
-    monkeytest = {}
-    monkeytrue = {}
-    monkeyfalse = {}
-    ans = {}
-    curr = 0
-    monkeyCount = 0
-    lcm = 1
-    for i in f:
-        if i[:6] == "Monkey":
-            monkeyCount += 1
-            i = i.strip("\n").split(" ")
-            idnum = int(i[1][:-1])
-            curr = idnum
-            monkeyitems[idnum] = []
-            ans[idnum] = 0
-            monkeyoper[idnum] = []
-            monkeytest[idnum] = []
-            monkeytrue[idnum] = []
-            monkeyfalse[idnum] = []
-
+    for desc in f:
+        desc = desc.strip("\n").split(": ")
+        if len(desc) == 1:
+            type = desc[0]
         else:
-            i = i.strip("\n").split(": ")
-            i[0] = i[0].strip(" ")
-            if i[0] == "Starting items":
-                items = list(map(int, i[1].split(", ")))
-                monkeyitems[curr] = items
+            type, value = desc
+            value = value.replace(",", "").split(" ")
+        type = type.strip(" ").split(" ")
+        if type[0] == "":
+            continue
+        if type[0] == "Monkey":
+            part_one_monkey = Monkey()
+            part_one_monkey.id = int(type[1][:-1])
+            part_one_monkeys[part_one_monkey.id] = part_one_monkey
+
+            part_two_monkey = Monkey()
+            part_two_monkey.id = int(type[1][:-1])
+            part_two_monkeys[part_two_monkey.id] = part_two_monkey
             
-            elif i[0] == "Operation":
-                oper = i[1].split(" ")
-                monkeyoper[curr] = oper
-            
-            elif i[0] == "Test":
-                test = i[1].split(" ")
-                monkeytest[curr] = int(test[-1])
-                lcm *= int(test[-1])
-            
-            elif i[0] == "If true":
-                passing = i[1].split(" ")
-                monkeytrue[curr] = int(passing[-1])
-            elif i[0] == "If false":
-                passing = i[1].split(" ")
-                monkeyfalse[curr] = int(passing[-1])
+        elif type[0] == "Starting":
+            for item in value:
+                part_one_monkey.items.append(int(item))
 
-    # Adjust value between 20 and 10000 for both parts
-    for i in range(10000):
-        for j in range(monkeyCount):
-            operation = monkeyoper[j]
-            for item in monkeyitems[j]:
-                ans[j] += 1
-                if operation[-1] == "old":
-                    val = item
-                else:
-                    val = int(operation[-1])
+                part_two_monkey.items.append(int(item))
 
-                if operation[-2] == "+":
-                    item += val
-                else:
-                    item *= val
-                
-                # for Part 1
-                #item /= 3
-                #item = math.floor(item)
+        elif type[0] == "Operation":
+            part_one_monkey.operator = value[-2]
+            part_one_monkey.operant = value[-1]
 
-                testing = monkeytest[j]
-                
-                item %= lcm
-                if item % testing == 0:
-                    monkeyitems[monkeytrue[j]].append(item)
-                else:
-                    monkeyitems[monkeyfalse[j]].append(item) 
+            part_two_monkey.operator = value[-2]
+            part_two_monkey.operant = value[-1]
 
-            monkeyitems[j] = []
+        elif type[0] == "Test":
+            divisor_CM *= int(value[-1])
 
-    anslist = []
-    for monkey in ans:
-        anslist.append(ans[monkey])
-    anslist.sort()
-    print(anslist[-1] * anslist[-2])
+            part_one_monkey.divisor = int(value[-1])
+
+            part_two_monkey.divisor = int(value[-1])
 
 
-            
+        elif type[1] == "true":
+            part_one_monkey.true_pass = int(value[-1])
+
+            part_two_monkey.true_pass = int(value[-1])
+
+        elif type[1] == "false":
+            part_one_monkey.false_pass = int(value[-1])           
+
+            part_two_monkey.false_pass = int(value[-1])            
+
+# Part 1 Answer
+print(monkey_business(20, part_one_monkeys, divisor_CM, True)
+)
+# Part 2 Answer
+print(monkey_business(10000, part_two_monkeys, divisor_CM, False))
