@@ -19,7 +19,7 @@ memo = {}
 all_dir = []
 track = {}
 storage = {}
-curr = ["/"]
+curr = []
 with open("input.txt") as f:
     for i in f:
         i = i.strip("\n").split(" ")
@@ -60,7 +60,7 @@ for dir in all_dir:
 # Part 1 Answer
 print(part_one_answer)
 
-space_to_delete = memo["/ /"] - 40000000
+space_to_delete = memo["/"] - 40000000
 all_used_spaces = list(memo.values())
 all_used_spaces.sort()
 for used_space in all_used_spaces:
