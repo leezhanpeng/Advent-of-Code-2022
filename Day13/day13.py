@@ -1,56 +1,59 @@
 import ast
 
-def compare(list1, list2):
-    if type(list1) != list:
-        list1 = [list1]
+def compare(packet_one, packet_two):
+    if type(packet_one) != list:
+        packet_one = [packet_one]
 
-    if type(list2) != list:
-        list2 = [list2]
+    if type(packet_two) != list:
+        packet_two = [packet_two]
 
     index = 0
-    while index != len(list1) and index != len(list2):
-        if type(list1[index]) == list or type(list2[index]) == list:
-            output = compare(list1[index], list2[index])
+    while index != len(packet_one) and index != len(packet_two):
+        if type(packet_one[index]) == list or type(packet_two[index]) == list:
+            output = compare(packet_one[index], packet_two[index])
+
             if output != None:
                 return output
+
         else:
-            if list1[index] > list2[index]:
+            if packet_one[index] > packet_two[index]:
                 return False
-            elif list1[index] < list2[index]:
+
+            elif packet_one[index] < packet_two[index]:
                 return True
+
         index += 1
     
-    if index == len(list1) and index == len(list2):
+    if index == len(packet_one) and index == len(packet_two):
         return None
-    if (index == len(list1)):
+
+    if (index == len(packet_one)):
         return True
+
     return False
 
-input = []
+packets = []
 with open("input.txt") as f:
-    for i in f:
-        if i.strip("\n") != "":
-            input.append(ast.literal_eval(i.strip("\n")))
+    for packet in f:
+        if packet.strip("\n") != "":
+            packets.append(ast.literal_eval(packet.strip("\n")))
         
-result = 0
-for i in range(0, len(input), 2):
-    if compare(input[i], input[i + 1]):
-        result += (i // 2) + 1
+part_one_answer = 0
+for i in range(0, len(packets), 2):
+    if compare(packets[i], packets[i + 1]):
+        part_one_answer += (i // 2) + 1
 
-input.append([[2]])
-input.append([[6]])
+index_one = 1
+index_two = 2
+for packet in packets:
+    if compare(packet, [[2]]):
+        index_one += 1
+    if compare(packet, [[6]]):
+        index_two += 1
 
-ans = []
-for packet in input:
-    inserted = False
-    for i in range(len(ans)):
-        if compare(packet, ans[i]):
-            ans.insert(i, packet)
-            inserted = True
-            break
-    if not inserted:
-        ans.append(packet)
+# Part 1 Answer
+print(part_one_answer)
 
-print(result)
 
-print((ans.index([[2]]) + 1) * (ans.index([[6]]) + 1))
+# Part 2 Answer
+print(index_one * index_two)
